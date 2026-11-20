@@ -107,7 +107,7 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawText("LEXICON", 38, 30, 180, 26, juce::Justification::centredLeft);
     g.setFont(juce::Font(12.0f, juce::Font::bold));
     g.drawText("PCM 70  DIGITAL EFFECTS PROCESSOR", 38, 57, 360, 18, juce::Justification::centredLeft);
-    g.drawText("LEGACY", 642, 35, 76, 20, juce::Justification::centredRight);
+    g.drawText("LEGACY", 642, 35, 76, 20, juce::Justification::centredRight);\n    g.setColour(juce::Colour(0xff8b2118));\n    g.setFont(juce::Font(13.0f, juce::Font::bold));\n    g.drawText("GUI TEST 1.0", 565, 58, 153, 20, juce::Justification::centredRight);
 
     // Recessed green LCD window
     g.setColour(juce::Colour(0xff101810));
