@@ -1,4 +1,5 @@
 #include "PluginEditor.h"
+#include "DiagnosticLog.h"
 
 PCM70LegacyAudioProcessorEditor::Knob::Knob(juce::AudioProcessorValueTreeState& state,
                                              const juce::String& id, const juce::String& text)
@@ -17,6 +18,7 @@ PCM70LegacyAudioProcessorEditor::Knob::Knob(juce::AudioProcessorValueTreeState& 
     slider.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colour(0xff252523));
     addAndMakeVisible(slider);
     attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(state, id, slider);
+    PCM70Diagnostics::log("Slider attachment created: " + id);
 }
 void PCM70LegacyAudioProcessorEditor::Knob::resized()
 {
@@ -27,6 +29,7 @@ void PCM70LegacyAudioProcessorEditor::Knob::resized()
 PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudioProcessor& p)
     : AudioProcessorEditor(&p), processor(p)
 {
+    PCM70Diagnostics::log("Editor constructor begin");
     setSize(760, 470);
     title.setText("PCM70 LEGACY", juce::dontSendNotification);
     title.setFont(juce::Font(30.0f, juce::Font::bold));
@@ -48,6 +51,7 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     addAndMakeVisible(program);
     programAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         processor.parameters, "program", program);
+    PCM70Diagnostics::log("Program attachment created");
 
     const std::array<std::pair<const char*, const char*>, 10> defs {{
         {"decay","DECAY"}, {"size","SIZE"}, {"predelay","PREDELAY"}, {"diffusion","DIFFUSION"},
@@ -59,6 +63,12 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
         knobs[i] = std::make_unique<Knob>(processor.parameters, defs[i].first, defs[i].second);
         addAndMakeVisible(*knobs[i]);
     }
+    PCM70Diagnostics::log("Editor constructor complete");
+}
+
+PCM70LegacyAudioProcessorEditor::~PCM70LegacyAudioProcessorEditor()
+{
+    PCM70Diagnostics::log("Editor destructor");
 }
 void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
 {
@@ -74,6 +84,7 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
 }
 void PCM70LegacyAudioProcessorEditor::resized()
 {
+    PCM70Diagnostics::log("Editor resized: " + juce::String(getWidth()) + "x" + juce::String(getHeight()));
     title.setBounds(24, 18, 712, 42);
     subtitle.setBounds(24, 58, 712, 22);
     program.setBounds(285, 108, 190, 28);
