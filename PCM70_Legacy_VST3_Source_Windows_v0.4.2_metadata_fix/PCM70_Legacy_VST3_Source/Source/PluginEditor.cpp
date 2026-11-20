@@ -167,8 +167,8 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.fillRoundedRectangle(bezel.expanded(3.0f), 5.0f);
     g.setColour(juce::Colour(0xff0b0e0a));
     g.fillRoundedRectangle(bezel, 3.0f);
-    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff142319), lcdBlack,
-                                           bezel.getX(), bezel.getY(), bezel.getRight(), bezel.getBottom(), false));
+    g.setGradientFill(juce::ColourGradient(juce::Colour(0xff142319), bezel.getX(), bezel.getY(),
+                                           lcdBlack, bezel.getRight(), bezel.getBottom(), false));
     g.fillRoundedRectangle(juce::Rectangle<float>(45, 100, 476, 176), 2.0f);
     g.setColour(juce::Colour(0xff536e4e));
     g.drawRoundedRectangle(juce::Rectangle<float>(45, 100, 476, 176), 2.0f, 1.0f);
