@@ -72,96 +72,27 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     mixSelectButton.setTooltip("Select MIX for Soft Knob");
     inputSelectButton.setTooltip("Select INPUT level for Soft Knob");
     outputSelectButton.setTooltip("Select OUTPUT level for Soft Knob");
-    decaySelectButton.onClick = [this]
+    decaySelectButton.onClick = [this] { if (secondBank) selectParameter("modRate", "MOD RATE", "HZ"); else selectParameter("decay", "DECAY", "SEC"); };
+    sizeSelectButton.onClick = [this] { if (secondBank) selectParameter("earlyLevel", "EARLY LEVEL", "%"); else selectParameter("size", "SIZE", "X"); };
+    predelaySelectButton.onClick = [this] { if (secondBank) selectParameter("lateLevel", "LATE LEVEL", "%"); else selectParameter("predelay", "PREDELAY", "MS"); };
+    diffusionSelectButton.onClick = [this] { if (secondBank) selectParameter("crossfeed", "CROSSFEED", "%"); else selectParameter("diffusion", "DIFFUSION", "%"); };
+    dampingSelectButton.onClick = [this] { selectParameter("damping", "DAMPING", "HZ"); };
+    modulationSelectButton.onClick = [this] { selectParameter("modulation", "MODULATION", "%"); };
+    widthSelectButton.onClick = [this] { selectParameter("width", "WIDTH", "%"); };
+    mixSelectButton.onClick = [this] { selectParameter("mix", "MIX", "%"); };
+    inputSelectButton.onClick = [this] { selectParameter("input", "INPUT", "DB"); };
+    outputSelectButton.onClick = [this] { selectParameter("output", "OUTPUT", "DB"); };
+    bankButton.setButtonText("BANK A");
+    bankButton.setTooltip("Switch parameter bank A / B");
+    bankButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff30342f));
+    bankButton.setColour(juce::TextButton::textColourOffId, green);
+    bankButton.onClick = [this]
     {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "decay", softKnob);
-        selectedParameterName = "DECAY";
-        selectedParameterUnit = "SEC";
-        repaint(55, 225, 430, 35);
+        secondBank = !secondBank;
+        bankButton.setButtonText(secondBank ? "BANK B" : "BANK A");
+        repaint(45, 100, 475, 174);
     };
-    sizeSelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "size", softKnob);
-        selectedParameterName = "SIZE";
-        selectedParameterUnit = "X";
-        repaint(55, 225, 430, 35);
-    };
-    predelaySelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "predelay", softKnob);
-        selectedParameterName = "PREDELAY";
-        selectedParameterUnit = "MS";
-        repaint(55, 225, 430, 35);
-    };
-    diffusionSelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "diffusion", softKnob);
-        selectedParameterName = "DIFFUSION";
-        selectedParameterUnit = "%";
-        repaint(55, 225, 430, 35);
-    };
-    dampingSelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "damping", softKnob);
-        selectedParameterName = "DAMPING";
-        selectedParameterUnit = "HZ";
-        repaint(55, 225, 430, 35);
-    };
-    modulationSelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "modulation", softKnob);
-        selectedParameterName = "MODULATION";
-        selectedParameterUnit = "%";
-        repaint(55, 225, 430, 35);
-    };
-    widthSelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "width", softKnob);
-        selectedParameterName = "WIDTH";
-        selectedParameterUnit = "%";
-        repaint(55, 225, 430, 35);
-    };
-    mixSelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "mix", softKnob);
-        selectedParameterName = "MIX";
-        selectedParameterUnit = "%";
-        repaint(55, 225, 430, 35);
-    };
-    inputSelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "input", softKnob);
-        selectedParameterName = "INPUT";
-        selectedParameterUnit = "DB";
-        repaint(55, 225, 430, 35);
-    };
-    outputSelectButton.onClick = [this]
-    {
-        activeKnobAttachment.reset();
-        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-            processor.parameters, "output", softKnob);
-        selectedParameterName = "OUTPUT";
-        selectedParameterUnit = "DB";
-        repaint(55, 225, 430, 35);
-    };
+    addAndMakeVisible(bankButton);
     softKnob.onValueChange = [this] { repaint(55, 225, 430, 35); };
 
     setSize(760, 470);
@@ -177,8 +108,20 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     mixSelectButton.setBounds(395, 328, 42, 38);
     inputSelectButton.setBounds(444, 328, 42, 38);
     outputSelectButton.setBounds(493, 328, 42, 38);
+    bankButton.setBounds(410, 108, 92, 24);
     PCM70Diagnostics::log("LCD READOUT GUI 0.4.17: setSize and controls setup returned");
     PCM70Diagnostics::log("LCD READOUT GUI 0.4.17: editor ready");
+}
+
+void PCM70LegacyAudioProcessorEditor::selectParameter(const juce::String& parameterId, const juce::String& displayName, const juce::String& unit)
+{
+    activeKnobAttachment.reset();
+    activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        processor.parameters, parameterId, softKnob);
+    selectedParameterName = displayName;
+    selectedParameterUnit = unit;
+    softKnob.setTooltip("SOFT KNOB — " + displayName);
+    repaint(55, 225, 430, 35);
 }
 
 void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
@@ -210,6 +153,7 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(green.withAlpha(0.75f));
     g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
     g.drawText("PROGRAM / EDIT", 62, 112, 200, 18, juce::Justification::left);
+    g.drawText(secondBank ? "PARAMETER BANK B" : "PARAMETER BANK A", 275, 112, 225, 18, juce::Justification::right);
     g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
     g.drawText("PARAMETER", 62, 207, 180, 18, juce::Justification::left);
     g.drawText("EDIT VALUE", 330, 207, 150, 18, juce::Justification::right);
@@ -235,6 +179,9 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawText("SOFT KNOB", 565, 294, 145, 18, juce::Justification::centred);
     g.setColour(juce::Colour(0xff77796e));
     g.drawHorizontalLine(283, 38.0f, 722.0f);
+    g.setColour(juce::Colour(0xffd8d7ca));
+    g.drawHorizontalLine(92, 32.0f, 728.0f);
+    g.drawHorizontalLine(383, 32.0f, 728.0f);
 
     const int x0 = 52, y = 328, w = 42, h = 38, gap = 7;
     for (int i = 0; i < 10; ++i)
