@@ -30,7 +30,9 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     : AudioProcessorEditor(&p), processor(p)
 {
     PCM70Diagnostics::log("Editor constructor begin");
+    PCM70Diagnostics::log("Editor before setSize");
     setSize(760, 470);
+    PCM70Diagnostics::log("Editor after setSize");
     title.setText("PCM70 LEGACY", juce::dontSendNotification);
     title.setFont(juce::Font(30.0f, juce::Font::bold));
     title.setColour(juce::Label::textColourId, juce::Colour(0xffe4d1a7));
@@ -49,6 +51,7 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     program.setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff292825));
     program.setColour(juce::ComboBox::textColourId, juce::Colour(0xffe8dcc3));
     addAndMakeVisible(program);
+    PCM70Diagnostics::log("Editor before program attachment");
     programAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         processor.parameters, "program", program);
     PCM70Diagnostics::log("Program attachment created");
@@ -60,15 +63,18 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     }};
     for (size_t i = 0; i < defs.size(); ++i)
     {
+        PCM70Diagnostics::log("Creating knob " + juce::String((int)i) + ": " + defs[i].first);
         knobs[i] = std::make_unique<Knob>(processor.parameters, defs[i].first, defs[i].second);
+        PCM70Diagnostics::log("Knob object created " + juce::String((int)i));
         addAndMakeVisible(*knobs[i]);
+        PCM70Diagnostics::log("Knob added " + juce::String((int)i));
     }
     PCM70Diagnostics::log("Editor constructor complete");
 }
 
 PCM70LegacyAudioProcessorEditor::~PCM70LegacyAudioProcessorEditor()
 {
-    PCM70Diagnostics::log("Editor destructor");
+    PCM70Diagnostics::log("Editor destructor begin");
 }
 void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
 {
@@ -84,7 +90,7 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
 }
 void PCM70LegacyAudioProcessorEditor::resized()
 {
-    PCM70Diagnostics::log("Editor resized: " + juce::String(getWidth()) + "x" + juce::String(getHeight()));
+    PCM70Diagnostics::log("Editor resized begin: " + juce::String(getWidth()) + "x" + juce::String(getHeight()));
     title.setBounds(24, 18, 712, 42);
     subtitle.setBounds(24, 58, 712, 22);
     program.setBounds(285, 108, 190, 28);
@@ -93,4 +99,5 @@ void PCM70LegacyAudioProcessorEditor::resized()
         knobs[(size_t)i]->setBounds(left + i * (w + gap), top, w, h);
     for (int i = 7; i < 10; ++i)
         knobs[(size_t)i]->setBounds(left + (i - 7) * (w + gap), top + 132, w, h);
+    PCM70Diagnostics::log("Editor resized complete");
 }
