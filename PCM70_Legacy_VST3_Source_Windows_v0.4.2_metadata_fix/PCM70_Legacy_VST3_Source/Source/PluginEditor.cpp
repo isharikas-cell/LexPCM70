@@ -44,6 +44,7 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     addAndMakeVisible(softKnob);
     decayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         processor.parameters, "decay", softKnob);
+    softKnob.onValueChange = [this] { repaint(55, 225, 430, 35); };
 
     setSize(760, 470);
     programSelector.setBounds(60, 143, 440, 34);
@@ -84,7 +85,8 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
     g.drawText("PARAMETER", 62, 207, 110, 18, juce::Justification::left);
     g.setFont(juce::Font("Consolas", 15.0f, juce::Font::bold));
-    g.drawText("DECAY       4.8 SEC", 62, 230, 420, 24, juce::Justification::left);
+    g.drawText("DECAY       " + juce::String(softKnob.getValue(), 2) + " SEC",
+               62, 230, 420, 24, juce::Justification::left);
 
     g.setColour(inkColour);
     g.setFont(juce::Font(10.0f, juce::Font::bold));
