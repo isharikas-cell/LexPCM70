@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "DiagnosticLog.h"
 #include <algorithm>
 #include <cmath>
 
@@ -13,7 +14,14 @@ PCM70LegacyAudioProcessor::PCM70LegacyAudioProcessor()
         .withInput("Input", juce::AudioChannelSet::stereo(), true)
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
       parameters(*this, nullptr, "PARAMETERS", createParameterLayout())
-{}
+{
+    PCM70Diagnostics::log("Processor constructor");
+}
+
+PCM70LegacyAudioProcessor::~PCM70LegacyAudioProcessor()
+{
+    PCM70Diagnostics::log("Processor destructor");
+}
 
 juce::AudioProcessorValueTreeState::ParameterLayout PCM70LegacyAudioProcessor::createParameterLayout()
 {
@@ -228,7 +236,10 @@ void PCM70LegacyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 
 juce::AudioProcessorEditor* PCM70LegacyAudioProcessor::createEditor()
 {
-    return new PCM70LegacyAudioProcessorEditor(*this);
+    PCM70Diagnostics::log("createEditor called");
+    auto* editor = new PCM70LegacyAudioProcessorEditor(*this);
+    PCM70Diagnostics::log("createEditor returned editor");
+    return editor;
 }
 void PCM70LegacyAudioProcessor::getStateInformation(juce::MemoryBlock& dest)
 {
