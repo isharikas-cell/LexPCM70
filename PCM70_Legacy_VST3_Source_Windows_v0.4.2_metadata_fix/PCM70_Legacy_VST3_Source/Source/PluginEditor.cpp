@@ -69,6 +69,7 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
         addAndMakeVisible(*knobs[i]);
         PCM70Diagnostics::log("Knob added " + juce::String((int)i));
     }
+    resized();
     PCM70Diagnostics::log("Editor constructor complete");
 }
 
@@ -96,8 +97,10 @@ void PCM70LegacyAudioProcessorEditor::resized()
     program.setBounds(285, 108, 190, 28);
     const int left = 32, top = 158, w = 136, h = 128, gap = 5;
     for (int i = 0; i < 7; ++i)
-        knobs[(size_t)i]->setBounds(left + i * (w + gap), top, w, h);
+        if (knobs[(size_t)i] != nullptr)
+            knobs[(size_t)i]->setBounds(left + i * (w + gap), top, w, h);
     for (int i = 7; i < 10; ++i)
-        knobs[(size_t)i]->setBounds(left + (i - 7) * (w + gap), top + 132, w, h);
+        if (knobs[(size_t)i] != nullptr)
+            knobs[(size_t)i]->setBounds(left + (i - 7) * (w + gap), top + 132, w, h);
     PCM70Diagnostics::log("Editor resized complete");
 }
