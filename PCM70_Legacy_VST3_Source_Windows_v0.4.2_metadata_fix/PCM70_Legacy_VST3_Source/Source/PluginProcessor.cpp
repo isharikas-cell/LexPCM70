@@ -40,6 +40,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout PCM70LegacyAudioProcessor::c
     p.push_back(std::make_unique<APF>("mix", "Mix", juce::NormalisableRange<float>(0.0f, 100.0f, 0.1f), 25.0f, "%"));
     p.push_back(std::make_unique<APF>("input", "Input", juce::NormalisableRange<float>(-18.0f, 12.0f, 0.1f), 0.0f, " dB"));
     p.push_back(std::make_unique<APF>("output", "Output", juce::NormalisableRange<float>(-18.0f, 12.0f, 0.1f), 0.0f, " dB"));
+    p.push_back(std::make_unique<APF>("modRate", "Mod Rate", juce::NormalisableRange<float>(0.05f, 2.0f, 0.01f), 0.35f, " Hz"));
+    p.push_back(std::make_unique<APF>("earlyLevel", "Early Level", juce::NormalisableRange<float>(0.0f, 150.0f, 0.1f), 100.0f, "%"));
+    p.push_back(std::make_unique<APF>("lateLevel", "Late Level", juce::NormalisableRange<float>(0.0f, 150.0f, 0.1f), 100.0f, "%"));
+    p.push_back(std::make_unique<APF>("crossfeed", "Crossfeed", juce::NormalisableRange<float>(0.0f, 50.0f, 0.1f), 8.0f, "%"));
     return { p.begin(), p.end() };
 }
 
@@ -85,14 +89,18 @@ void PCM70LegacyAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
     mixSmooth.setCurrentAndTargetValue(parameters.getRawParameterValue("mix")->load() * 0.01f);
     inputGainSmooth.setCurrentAndTargetValue(juce::Decibels::decibelsToGain(parameters.getRawParameterValue("input")->load()));
     outputGainSmooth.setCurrentAndTargetValue(juce::Decibels::decibelsToGain(parameters.getRawParameterValue("output")->load()));
-    const float initialControls[7] = {
+    const float initialControls[11] = {
         parameters.getRawParameterValue("decay")->load(),
         parameters.getRawParameterValue("size")->load(),
         parameters.getRawParameterValue("predelay")->load(),
         parameters.getRawParameterValue("diffusion")->load(),
         parameters.getRawParameterValue("damping")->load(),
         parameters.getRawParameterValue("modulation")->load(),
-        parameters.getRawParameterValue("width")->load()
+        parameters.getRawParameterValue("width")->load(),
+        parameters.getRawParameterValue("modRate")->load(),
+        parameters.getRawParameterValue("earlyLevel")->load(),
+        parameters.getRawParameterValue("lateLevel")->load(),
+        parameters.getRawParameterValue("crossfeed")->load()
     };
     for (size_t i = 0; i < controlSmooth.size(); ++i)
     {
@@ -126,14 +134,18 @@ void PCM70LegacyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
     mixSmooth.setTargetValue(parameters.getRawParameterValue("mix")->load() * 0.01f);
     inputGainSmooth.setTargetValue(juce::Decibels::decibelsToGain(parameters.getRawParameterValue("input")->load()));
     outputGainSmooth.setTargetValue(juce::Decibels::decibelsToGain(parameters.getRawParameterValue("output")->load()));
-    const float controlTargets[7] = {
+    const float controlTargets[11] = {
         parameters.getRawParameterValue("decay")->load(),
         parameters.getRawParameterValue("size")->load(),
         parameters.getRawParameterValue("predelay")->load(),
         parameters.getRawParameterValue("diffusion")->load(),
         parameters.getRawParameterValue("damping")->load(),
         parameters.getRawParameterValue("modulation")->load(),
-        parameters.getRawParameterValue("width")->load()
+        parameters.getRawParameterValue("width")->load(),
+        parameters.getRawParameterValue("modRate")->load(),
+        parameters.getRawParameterValue("earlyLevel")->load(),
+        parameters.getRawParameterValue("lateLevel")->load(),
+        parameters.getRawParameterValue("crossfeed")->load()
     };
     for (size_t i = 0; i < controlSmooth.size(); ++i)
         controlSmooth[i].setTargetValue(controlTargets[i]);
@@ -161,6 +173,10 @@ void PCM70LegacyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
         const float dampingHz = controlSmooth[4].getNextValue();
         const float modulation = controlSmooth[5].getNextValue() * 0.01f;
         const float width = controlSmooth[6].getNextValue() * 0.01f;
+        const float modRate = controlSmooth[7].getNextValue();
+        const float earlyLevel = controlSmooth[8].getNextValue() * 0.01f;
+        const float lateLevel = controlSmooth[9].getNextValue() * 0.01f;
+        const float crossfeed = controlSmooth[10].getNextValue() * 0.01f;
         const float effectiveSize = size * modeSize;
         const float rt60 = juce::jmax(0.15f, decay * modeDecay);
         const float dampCoeff = 1.0f - std::exp(-2.0f * pi * dampingHz / (float)sr);
@@ -174,7 +190,7 @@ void PCM70LegacyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
         {
             auto& s = state[(size_t)c];
             const float channelSign = c == 0 ? 1.0f : 1.013f;
-            s.phase += 2.0f * pi * (0.13f + 0.37f * modulation) / (float)sr;
+            s.phase += 2.0f * pi * modRate / (float)sr;
             if (s.phase >= 2.0f * pi) s.phase -= 2.0f * pi;
             const float modSamples = std::sin(s.phase) * modulation * 2.2f * (float)sr / 1000.0f;
 
@@ -189,7 +205,7 @@ void PCM70LegacyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
             // A small, one-sample-delayed crossfeed couples the stereo tanks while
             // keeping the feedback matrix bounded and avoiding channel-order bias.
             const float crossFeed = c == 0 ? crossFromRight : crossFromLeft;
-            float networkInput = (earlyInput * 0.48f + early * 0.44f + crossFeed * 0.08f);
+            float networkInput = (earlyInput * 0.48f + early * 0.44f + crossFeed * crossfeed);
             const float g = 0.18f + 0.72f * diffusion * modeDiffusion;
             for (int ap = 0; ap < 2; ++ap)
             {
@@ -221,7 +237,7 @@ void PCM70LegacyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
 
             // Keep early reflections controlled while bringing the diffuse tail
             // up to a practical level; the Mix control remains the wet/dry blend.
-            wet[c] = early * 0.50f + sum * 1.35f;
+            wet[c] = early * 0.50f * earlyLevel + sum * 1.35f * lateLevel;
             s.crossState = sum * 0.30f + early * 0.10f;
         }
 
