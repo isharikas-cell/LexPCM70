@@ -7,19 +7,17 @@ namespace PCM70Diagnostics
     {
         static juce::CriticalSection lock;
         const juce::ScopedLock guard(lock);
+
         auto folder = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
                           .getChildFile("PCM70Legacy");
         if (!folder.exists() && !folder.createDirectory())
             return;
 
-        auto file = folder.getChildFile("diagnostics.log");
-        juce::FileOutputStream stream(file, 1024);
-        if (!stream.openedOk())
-            return;
-
-        stream.setPosition(file.getSize());
-        stream.writeText(juce::Time::getCurrentTime().toISO8601(true)
-                             + " | " + message + juce::newLine, false, false, nullptr);
-        stream.flush();
+        const auto file = folder.getChildFile("diagnostics.log");
+        const auto line = juce::Time::getCurrentTime().toISO8601(true)
+                        + " | " + message + juce::newLine;
+        // appendText opens, writes and closes the file for each event.
+        // This avoids retaining a stream or relying on a buffered stream's lifetime.
+        file.appendText(line, false, "\n");
     }
 }
