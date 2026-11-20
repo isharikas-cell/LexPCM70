@@ -12,7 +12,7 @@ const juce::Colour green(0xffa8f0a0);
 PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudioProcessor& p)
     : juce::AudioProcessorEditor(&p), processor(p)
 {
-    PCM70Diagnostics::log("PROGRAM SELECT GUI 0.4.8: constructor entered");
+    PCM70Diagnostics::log("SOFT KNOB GUI 0.4.9: constructor entered");
 
     // The program selector is the only interactive control in this test stage.
     programSelector.addItem("CONCERT HALL", 1);
@@ -32,10 +32,24 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     programAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         processor.parameters, "program", programSelector);
 
+    // One isolated rotary control: Soft Knob edits the existing Decay parameter.
+    softKnob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    softKnob.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    softKnob.setRotaryParameters(juce::MathConstants<float>::pi * 1.2f,
+                                 juce::MathConstants<float>::pi * 2.8f, true);
+    softKnob.setColour(juce::Slider::rotarySliderFillColourId, green);
+    softKnob.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xff51564e));
+    softKnob.setColour(juce::Slider::thumbColourId, juce::Colour(0xffe0dfd2));
+    softKnob.setTooltip("SOFT KNOB — Decay time");
+    addAndMakeVisible(softKnob);
+    decayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        processor.parameters, "decay", softKnob);
+
     setSize(760, 470);
     programSelector.setBounds(60, 143, 440, 34);
-    PCM70Diagnostics::log("PROGRAM SELECT GUI 0.4.8: setSize and selector setup returned");
-    PCM70Diagnostics::log("PROGRAM SELECT GUI 0.4.8: editor ready");
+    softKnob.setBounds(584, 128, 100, 100);
+    PCM70Diagnostics::log("SOFT KNOB GUI 0.4.9: setSize and controls setup returned");
+    PCM70Diagnostics::log("SOFT KNOB GUI 0.4.9: editor ready");
 }
 
 void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
