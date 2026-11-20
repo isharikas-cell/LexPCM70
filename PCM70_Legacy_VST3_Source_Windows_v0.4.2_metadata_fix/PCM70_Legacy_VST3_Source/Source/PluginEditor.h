@@ -6,7 +6,7 @@ class PCM70LegacyAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
     explicit PCM70LegacyAudioProcessorEditor(PCM70LegacyAudioProcessor&);
-    ~PCM70LegacyAudioProcessorEditor() override = default;
+    ~PCM70LegacyAudioProcessorEditor() override;
     void paint(juce::Graphics&) override;
     void resized() override;
 
