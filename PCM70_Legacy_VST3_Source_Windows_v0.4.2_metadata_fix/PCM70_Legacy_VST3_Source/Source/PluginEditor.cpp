@@ -34,10 +34,11 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     softKnob.setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colour(0xff51564e));
     softKnob.setColour(juce::Slider::thumbColourId, juce::Colour(0xff242822));
     addAndMakeVisible(softKnob);
+    softKnob.onValueChange = [this] { updateDisplay(); };
 
     valueLabel.setJustificationType(juce::Justification::centred);
     valueLabel.setColour(juce::Label::textColourId, green);
-    valueLabel.setFont(juce::Font(14.0f, juce::Font::bold, juce::Font::monospaced));
+    valueLabel.setFont(juce::Font("Consolas", 14.0f, juce::Font::bold));
     addAndMakeVisible(valueLabel);
 
     for (int i = 0; i < 10; ++i)
@@ -114,7 +115,7 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(juce::Colour(0xff566b52));
     g.drawRoundedRectangle(juce::Rectangle<float>(45, 100, 475, 174), 4.0f, 2.0f);
     g.setColour(green.withAlpha(0.75f));
-    g.setFont(juce::Font(11.0f, juce::Font::bold, juce::Font::monospaced));
+    g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
     g.drawText("PROGRAM / EDIT", 62, 112, 200, 18, juce::Justification::left);
     g.drawText("PARAMETER", 62, 207, 110, 18, juce::Justification::left);
 
