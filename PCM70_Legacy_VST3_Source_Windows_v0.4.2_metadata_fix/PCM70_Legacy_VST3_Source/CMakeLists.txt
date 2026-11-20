@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(PCM70Legacy VERSION 0.4.20)
+project(PCM70Legacy VERSION 0.4.21)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -12,12 +12,12 @@ FetchContent_MakeAvailable(JUCE)
 
 juce_add_plugin(PCM70Legacy
     COMPANY_NAME "Independent Audio Lab"
-    BUNDLE_ID "audio.independent.pcm70legacyguitest"
+    BUNDLE_ID "audio.independent.pcm70legacy"
     PLUGIN_MANUFACTURER_CODE InAu
-    PLUGIN_CODE Pm71
+    PLUGIN_CODE Pm70
     FORMATS VST3
-    PRODUCT_NAME "PCM70 Legacy GUI TEST"
-    DESCRIPTION "PCM70-inspired hybrid rack interface with full DSP parameter controls"
+    PRODUCT_NAME "PCM70 Legacy"
+    DESCRIPTION "Vintage-inspired stereo reverb"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
