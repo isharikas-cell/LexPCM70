@@ -22,6 +22,8 @@ private:
     juce::TextButton diffusionSelectButton;
     juce::TextButton dampingSelectButton;
     juce::TextButton modulationSelectButton;
+    juce::TextButton widthSelectButton;
+    juce::TextButton mixSelectButton;
     juce::String selectedParameterName { "DECAY" };
     juce::String selectedParameterUnit { "SEC" };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PCM70LegacyAudioProcessorEditor)
