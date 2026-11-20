@@ -26,6 +26,9 @@ private:
     juce::TextButton mixSelectButton;
     juce::TextButton inputSelectButton;
     juce::TextButton outputSelectButton;
+    juce::TextButton bankButton;
+    bool secondBank = false;
+    void selectParameter(const juce::String& parameterId, const juce::String& displayName, const juce::String& unit);
     juce::String selectedParameterName { "DECAY" };
     juce::String selectedParameterUnit { "SEC" };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PCM70LegacyAudioProcessorEditor)
