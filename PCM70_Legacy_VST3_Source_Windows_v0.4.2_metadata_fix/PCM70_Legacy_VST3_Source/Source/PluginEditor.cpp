@@ -12,7 +12,7 @@ const juce::Colour green(0xffa8f0a0);
 PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudioProcessor& p)
     : juce::AudioProcessorEditor(&p), processor(p)
 {
-    PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.16: constructor entered");
+    PCM70Diagnostics::log("LCD READOUT GUI 0.4.17: constructor entered");
 
     // The program selector is the only interactive control in this test stage.
     programSelector.addItem("CONCERT HALL", 1);
@@ -177,8 +177,8 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     mixSelectButton.setBounds(395, 328, 42, 38);
     inputSelectButton.setBounds(444, 328, 42, 38);
     outputSelectButton.setBounds(493, 328, 42, 38);
-    PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.16: setSize and controls setup returned");
-    PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.15: editor ready");
+    PCM70Diagnostics::log("LCD READOUT GUI 0.4.17: setSize and controls setup returned");
+    PCM70Diagnostics::log("LCD READOUT GUI 0.4.17: editor ready");
 }
 
 void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
@@ -211,10 +211,23 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
     g.drawText("PROGRAM / EDIT", 62, 112, 200, 18, juce::Justification::left);
     g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
-    g.drawText("PARAMETER", 62, 207, 110, 18, juce::Justification::left);
+    g.drawText("PARAMETER", 62, 207, 180, 18, juce::Justification::left);
+    g.drawText("EDIT VALUE", 330, 207, 150, 18, juce::Justification::right);
+    g.setColour(juce::Colour(0xff566b52));
+    g.drawHorizontalLine(226, 62.0f, 482.0f);
+    g.setColour(green);
     g.setFont(juce::Font("Consolas", 15.0f, juce::Font::bold));
-    g.drawText(selectedParameterName + "       " + juce::String(softKnob.getValue(), 2) + " " + selectedParameterUnit,
-               62, 230, 420, 24, juce::Justification::left);
+    g.drawText(selectedParameterName, 62, 234, 205, 24, juce::Justification::left);
+
+    const auto parameterValue = softKnob.getValue();
+    juce::String valueText;
+    if (selectedParameterUnit == "MS" || selectedParameterUnit == "HZ" || selectedParameterUnit == "%")
+        valueText = juce::String(juce::roundToInt(parameterValue));
+    else if (selectedParameterUnit == "DB")
+        valueText = (parameterValue > 0.0001 ? "+" : "") + juce::String(parameterValue, 1);
+    else
+        valueText = juce::String(parameterValue, 2);
+    g.drawText(valueText + " " + selectedParameterUnit, 270, 234, 212, 24, juce::Justification::right);
 
     g.setColour(inkColour);
     g.setFont(juce::Font(10.0f, juce::Font::bold));
