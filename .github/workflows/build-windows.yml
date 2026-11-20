@@ -1,5 +1,5 @@
 name: Build Windows VST3
-# Wet return level correction 0.4.11 packaging verification
+# Wet return level correction 0.4.12 packaging verification
 on:
   workflow_dispatch:
   push:
