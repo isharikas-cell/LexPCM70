@@ -1,5 +1,5 @@
 name: Build Windows VST3
-# Soft Knob GUI 0.4.9 packaging verification
+# Soft Knob live Decay readout 0.4.10 packaging verification
 on:
   workflow_dispatch:
   push:
