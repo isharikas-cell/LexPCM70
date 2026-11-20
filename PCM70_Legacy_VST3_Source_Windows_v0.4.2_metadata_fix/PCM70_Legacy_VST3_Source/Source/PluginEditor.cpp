@@ -14,6 +14,7 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
 {
     PCM70Diagnostics::log("PCM70 v1.0 editor constructor");
     setSize(760, 470);
+    PCM70Diagnostics::log("GUI checkpoint 01: setSize complete");
 
     program.addItem("CONCERT HALL", 1);
     program.addItem("RICH PLATE", 2);
@@ -23,8 +24,10 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     program.setColour(juce::ComboBox::textColourId, green);
     program.setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff53644f));
     addAndMakeVisible(program);
+    PCM70Diagnostics::log("GUI checkpoint 02: program component visible");
     programAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         processor.parameters, "program", program);
+    PCM70Diagnostics::log("GUI checkpoint 03: program attachment complete");
 
     softKnob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     softKnob.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
@@ -35,11 +38,13 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     softKnob.setColour(juce::Slider::thumbColourId, juce::Colour(0xff242822));
     addAndMakeVisible(softKnob);
     softKnob.onValueChange = [this] { updateDisplay(); };
+    PCM70Diagnostics::log("GUI checkpoint 04: soft knob setup complete");
 
     valueLabel.setJustificationType(juce::Justification::centred);
     valueLabel.setColour(juce::Label::textColourId, green);
     valueLabel.setFont(juce::Font("Consolas", 14.0f, juce::Font::bold));
     addAndMakeVisible(valueLabel);
+    PCM70Diagnostics::log("GUI checkpoint 05: value label setup complete");
 
     for (int i = 0; i < 10; ++i)
     {
@@ -47,8 +52,11 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
         styleButton(*numberButtons[(size_t)i], juce::String(i));
         numberButtons[(size_t)i]->onClick = [this, i] { selectParameter(i); };
         addAndMakeVisible(*numberButtons[(size_t)i]);
+        PCM70Diagnostics::log("GUI checkpoint button created: " + juce::String(i));
     }
+    PCM70Diagnostics::log("GUI checkpoint 06: all number buttons complete");
     selectParameter(0);
+    PCM70Diagnostics::log("GUI checkpoint 07: initial parameter selected");
     PCM70Diagnostics::log("PCM70 v1.0 editor ready");
 }
 
