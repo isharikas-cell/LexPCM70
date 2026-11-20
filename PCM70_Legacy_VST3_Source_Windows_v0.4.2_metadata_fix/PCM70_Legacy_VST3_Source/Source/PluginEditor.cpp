@@ -12,7 +12,7 @@ const juce::Colour green(0xffa8f0a0);
 PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudioProcessor& p)
     : juce::AudioProcessorEditor(&p), processor(p)
 {
-    PCM70Diagnostics::log("SOFT KNOB GUI 0.4.9: constructor entered");
+    PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.13: constructor entered");
 
     // The program selector is the only interactive control in this test stage.
     programSelector.addItem("CONCERT HALL", 1);
@@ -46,7 +46,9 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
         processor.parameters, "decay", softKnob);
     decaySelectButton.setButtonText("0");
     sizeSelectButton.setButtonText("1");
-    for (auto* button : { &decaySelectButton, &sizeSelectButton })
+    predelaySelectButton.setButtonText("2");
+    diffusionSelectButton.setButtonText("3");
+    for (auto* button : { &decaySelectButton, &sizeSelectButton, &predelaySelectButton, &diffusionSelectButton })
     {
         button->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff30342f));
         button->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffe0dfd2));
@@ -56,6 +58,8 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     }
     decaySelectButton.setTooltip("Select DECAY for Soft Knob");
     sizeSelectButton.setTooltip("Select SIZE for Soft Knob");
+    predelaySelectButton.setTooltip("Select PREDELAY for Soft Knob");
+    diffusionSelectButton.setTooltip("Select DIFFUSION for Soft Knob");
     decaySelectButton.onClick = [this]
     {
         activeKnobAttachment.reset();
@@ -74,6 +78,24 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
         selectedParameterUnit = "X";
         repaint(55, 225, 430, 35);
     };
+    predelaySelectButton.onClick = [this]
+    {
+        activeKnobAttachment.reset();
+        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+            processor.parameters, "predelay", softKnob);
+        selectedParameterName = "PREDELAY";
+        selectedParameterUnit = "MS";
+        repaint(55, 225, 430, 35);
+    };
+    diffusionSelectButton.onClick = [this]
+    {
+        activeKnobAttachment.reset();
+        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+            processor.parameters, "diffusion", softKnob);
+        selectedParameterName = "DIFFUSION";
+        selectedParameterUnit = "%";
+        repaint(55, 225, 430, 35);
+    };
     softKnob.onValueChange = [this] { repaint(55, 225, 430, 35); };
 
     setSize(760, 470);
@@ -81,6 +103,8 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     softKnob.setBounds(584, 128, 100, 100);
     decaySelectButton.setBounds(52, 328, 42, 38);
     sizeSelectButton.setBounds(101, 328, 42, 38);
+    predelaySelectButton.setBounds(150, 328, 42, 38);
+    diffusionSelectButton.setBounds(199, 328, 42, 38);
     PCM70Diagnostics::log("SOFT KNOB GUI 0.4.9: setSize and controls setup returned");
     PCM70Diagnostics::log("SOFT KNOB GUI 0.4.9: editor ready");
 }
