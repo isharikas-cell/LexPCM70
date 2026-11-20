@@ -7,7 +7,7 @@ class PCM70LegacyAudioProcessor : public juce::AudioProcessor
 {
 public:
     PCM70LegacyAudioProcessor();
-    ~PCM70LegacyAudioProcessor() override = default;
+    ~PCM70LegacyAudioProcessor() override;
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
     bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
