@@ -24,7 +24,7 @@ jobs:
           $parsed = $json | ConvertFrom-Json
           $json | Set-Content -Path $metadata -Encoding utf8
           $check = Get-Content $metadata -Raw | ConvertFrom-Json
-          if ($check.Version -ne "0.4.2") { throw "moduleinfo.json version is not 0.4.2 (found: $($check.Version))" }
+          if ($check.Version -ne "0.4.2") { throw "moduleinfo.json version is not 0.4.3 (found: $($check.Version))" }
           Write-Host "Validated moduleinfo.json version: $($check.Version)"
           Get-ChildItem $bundle -Recurse | Select-Object FullName, Length
       - name: Package VST3
