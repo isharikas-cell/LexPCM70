@@ -1,5 +1,5 @@
 name: Build Windows VST3
-# Program selector GUI 0.4.8 packaging verification
+# Program selector GUI 0.4.8 packaging verification (version check aligned)
 on:
   workflow_dispatch:
   push:
