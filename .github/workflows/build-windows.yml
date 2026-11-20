@@ -1,4 +1,5 @@
 name: Build Windows VST3
+# Static GUI 0.4.7 packaging verification
 on:
   workflow_dispatch:
   push:
