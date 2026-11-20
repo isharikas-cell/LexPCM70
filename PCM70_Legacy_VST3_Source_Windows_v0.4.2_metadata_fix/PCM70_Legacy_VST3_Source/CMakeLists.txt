@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(PCM70Legacy VERSION 0.4.6)
+project(PCM70Legacy VERSION 0.4.7)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -17,7 +17,7 @@ juce_add_plugin(PCM70Legacy
     PLUGIN_CODE Pm71
     FORMATS VST3
     PRODUCT_NAME "PCM70 Legacy GUI TEST"
-    DESCRIPTION "Minimal GUI isolation build for PCM70 Legacy"
+    DESCRIPTION "Static PCM70 hardware-style GUI test"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
