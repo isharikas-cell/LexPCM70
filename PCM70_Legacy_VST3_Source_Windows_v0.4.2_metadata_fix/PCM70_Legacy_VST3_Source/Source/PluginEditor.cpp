@@ -219,8 +219,8 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
         // Recess and bevel around each button face.
         g.setColour(juce::Colour(0xff555a51));
         g.fillRoundedRectangle((float)x - 1.0f, (float)y - 1.0f, (float)w + 2.0f, (float)h + 2.0f, 3.5f);
-        g.setGradientFill(juce::ColourGradient(juce::Colour(0xff555b51), juce::Colour(0xff20241f),
-                                               (float)x, (float)y, (float)x, (float)(y + h), false));
+        g.setGradientFill(juce::ColourGradient(juce::Colour(0xff555b51), (float)x, (float)y,
+                                               juce::Colour(0xff20241f), (float)x, (float)(y + h), false));
         g.fillRoundedRectangle((float)x, (float)y, (float)w, (float)h, 3.0f);
         g.setColour(juce::Colour(0xff858a7d));
         g.drawRoundedRectangle((float)x + 0.5f, (float)y + 0.5f, (float)w - 1.0f, (float)h - 1.0f, 3.0f, 0.8f);
