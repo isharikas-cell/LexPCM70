@@ -1,5 +1,5 @@
 name: Build Windows VST3
-# PCM70 hybrid rack interface C 0.4.20
+# PCM70 Legacy final release 0.4.21
 on:
   workflow_dispatch:
   push:
@@ -16,7 +16,7 @@ jobs:
       - name: Verify and repair VST3 metadata
         shell: pwsh
         run: |
-          $bundle = "build/PCM70Legacy_artefacts/Release/VST3/PCM70 Legacy GUI TEST.vst3"
+          $bundle = "build/PCM70Legacy_artefacts/Release/VST3/PCM70 Legacy.vst3"
           if (!(Test-Path $bundle)) { throw "Expected VST3 bundle was not produced: $bundle" }
           $metadata = Join-Path $bundle "Contents/Resources/moduleinfo.json"
           if (!(Test-Path $metadata)) { throw "VST3 moduleinfo.json was not produced: $metadata" }
@@ -25,14 +25,14 @@ jobs:
           $parsed = $json | ConvertFrom-Json
           $json | Set-Content -Path $metadata -Encoding utf8
           $check = Get-Content $metadata -Raw | ConvertFrom-Json
-          if ($check.Version -ne "0.4.20") { throw "moduleinfo.json version is not 0.4.20 (found: $($check.Version))" }
+          if ($check.Version -ne "0.4.21") { throw "moduleinfo.json version is not 0.4.21 (found: $($check.Version))" }
           Write-Host "Validated moduleinfo.json version: $($check.Version)"
           Get-ChildItem $bundle -Recurse | Select-Object FullName, Length
       - name: Package VST3
         shell: pwsh
-        run: Compress-Archive -Path "build/PCM70Legacy_artefacts/Release/VST3/PCM70 Legacy GUI TEST.vst3" -DestinationPath "PCM70-Legacy-HYBRID-C-0.4.20-Windows-x64-VST3.zip" -Force
+        run: Compress-Archive -Path "build/PCM70Legacy_artefacts/Release/VST3/PCM70 Legacy GUI TEST.vst3" -DestinationPath "PCM70-Legacy-0.4.21-Windows-x64-VST3.zip" -Force
       - uses: actions/upload-artifact@v4
         with:
-          name: PCM70-Legacy-HYBRID-C-0.4.20-Windows-x64-VST3
+          name: PCM70-Legacy-0.4.21-Windows-x64-VST3
           path: PCM70-Legacy-HYBRID-C-0.4.20-Windows-x64-VST3.zip
           if-no-files-found: error
