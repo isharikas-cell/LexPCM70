@@ -215,13 +215,13 @@ void PCM70LegacyAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
                 // Feed the tank strongly enough to build an audible late field.
                 // The previous 0.25 injection followed by 0.19 output scaling
                 // made the wet return excessively quiet at normal input levels.
-                s.comb[(size_t)k].push(networkInput * 0.40f + s.dampingState[(size_t)k] * feedback);
+                s.comb[(size_t)k].push(networkInput * 0.55f + s.dampingState[(size_t)k] * feedback);
                 sum += delayed * tapGain[k];
             }
 
             // Keep early reflections controlled while bringing the diffuse tail
             // up to a practical level; the Mix control remains the wet/dry blend.
-            wet[c] = early * 0.22f + sum * 0.34f;
+            wet[c] = early * 0.50f + sum * 1.35f;
             s.crossState = sum * 0.30f + early * 0.10f;
         }
 
