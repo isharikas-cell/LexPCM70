@@ -32,7 +32,7 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     programAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
         processor.parameters, "program", programSelector);
 
-    // One isolated rotary control: Soft Knob edits the existing Decay parameter.
+    // Soft Knob starts on Decay; keys 0 and 1 select Decay and Size.
     softKnob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
     softKnob.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     softKnob.setRotaryParameters(juce::MathConstants<float>::pi * 1.2f,
@@ -42,13 +42,45 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     softKnob.setColour(juce::Slider::thumbColourId, juce::Colour(0xffe0dfd2));
     softKnob.setTooltip("SOFT KNOB — Decay time");
     addAndMakeVisible(softKnob);
-    decayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+    activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         processor.parameters, "decay", softKnob);
+    decaySelectButton.setButtonText("0");
+    sizeSelectButton.setButtonText("1");
+    for (auto* button : { &decaySelectButton, &sizeSelectButton })
+    {
+        button->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff30342f));
+        button->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffe0dfd2));
+        button->setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xff4b5945));
+        button->setColour(juce::TextButton::textColourOnId, green);
+        addAndMakeVisible(*button);
+    }
+    decaySelectButton.setTooltip("Select DECAY for Soft Knob");
+    sizeSelectButton.setTooltip("Select SIZE for Soft Knob");
+    decaySelectButton.onClick = [this]
+    {
+        activeKnobAttachment.reset();
+        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+            processor.parameters, "decay", softKnob);
+        selectedParameterName = "DECAY";
+        selectedParameterUnit = "SEC";
+        repaint(55, 225, 430, 35);
+    };
+    sizeSelectButton.onClick = [this]
+    {
+        activeKnobAttachment.reset();
+        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+            processor.parameters, "size", softKnob);
+        selectedParameterName = "SIZE";
+        selectedParameterUnit = "X";
+        repaint(55, 225, 430, 35);
+    };
     softKnob.onValueChange = [this] { repaint(55, 225, 430, 35); };
 
     setSize(760, 470);
     programSelector.setBounds(60, 143, 440, 34);
     softKnob.setBounds(584, 128, 100, 100);
+    decaySelectButton.setBounds(52, 328, 42, 38);
+    sizeSelectButton.setBounds(101, 328, 42, 38);
     PCM70Diagnostics::log("SOFT KNOB GUI 0.4.9: setSize and controls setup returned");
     PCM70Diagnostics::log("SOFT KNOB GUI 0.4.9: editor ready");
 }
@@ -85,7 +117,7 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
     g.drawText("PARAMETER", 62, 207, 110, 18, juce::Justification::left);
     g.setFont(juce::Font("Consolas", 15.0f, juce::Font::bold));
-    g.drawText("DECAY       " + juce::String(softKnob.getValue(), 2) + " SEC",
+    g.drawText(selectedParameterName + "       " + juce::String(softKnob.getValue(), 2) + " " + selectedParameterUnit,
                62, 230, 420, 24, juce::Justification::left);
 
     g.setColour(inkColour);
