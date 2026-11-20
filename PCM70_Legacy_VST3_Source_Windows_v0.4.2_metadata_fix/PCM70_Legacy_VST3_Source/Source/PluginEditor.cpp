@@ -12,7 +12,7 @@ const juce::Colour green(0xffa8f0a0);
 PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudioProcessor& p)
     : juce::AudioProcessorEditor(&p), processor(p)
 {
-    PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.15: constructor entered");
+    PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.16: constructor entered");
 
     // The program selector is the only interactive control in this test stage.
     programSelector.addItem("CONCERT HALL", 1);
@@ -52,7 +52,9 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     modulationSelectButton.setButtonText("5");
     widthSelectButton.setButtonText("6");
     mixSelectButton.setButtonText("7");
-    for (auto* button : { &decaySelectButton, &sizeSelectButton, &predelaySelectButton, &diffusionSelectButton, &dampingSelectButton, &modulationSelectButton, &widthSelectButton, &mixSelectButton })
+    inputSelectButton.setButtonText("8");
+    outputSelectButton.setButtonText("9");
+    for (auto* button : { &decaySelectButton, &sizeSelectButton, &predelaySelectButton, &diffusionSelectButton, &dampingSelectButton, &modulationSelectButton, &widthSelectButton, &mixSelectButton, &inputSelectButton, &outputSelectButton })
     {
         button->setColour(juce::TextButton::buttonColourId, juce::Colour(0xff30342f));
         button->setColour(juce::TextButton::textColourOffId, juce::Colour(0xffe0dfd2));
@@ -68,6 +70,8 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     modulationSelectButton.setTooltip("Select MODULATION for Soft Knob");
     widthSelectButton.setTooltip("Select WIDTH for Soft Knob");
     mixSelectButton.setTooltip("Select MIX for Soft Knob");
+    inputSelectButton.setTooltip("Select INPUT level for Soft Knob");
+    outputSelectButton.setTooltip("Select OUTPUT level for Soft Knob");
     decaySelectButton.onClick = [this]
     {
         activeKnobAttachment.reset();
@@ -140,6 +144,24 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
         selectedParameterUnit = "%";
         repaint(55, 225, 430, 35);
     };
+    inputSelectButton.onClick = [this]
+    {
+        activeKnobAttachment.reset();
+        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+            processor.parameters, "input", softKnob);
+        selectedParameterName = "INPUT";
+        selectedParameterUnit = "DB";
+        repaint(55, 225, 430, 35);
+    };
+    outputSelectButton.onClick = [this]
+    {
+        activeKnobAttachment.reset();
+        activeKnobAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+            processor.parameters, "output", softKnob);
+        selectedParameterName = "OUTPUT";
+        selectedParameterUnit = "DB";
+        repaint(55, 225, 430, 35);
+    };
     softKnob.onValueChange = [this] { repaint(55, 225, 430, 35); };
 
     setSize(760, 470);
@@ -153,7 +175,9 @@ PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudi
     modulationSelectButton.setBounds(297, 328, 42, 38);
     widthSelectButton.setBounds(346, 328, 42, 38);
     mixSelectButton.setBounds(395, 328, 42, 38);
-    PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.14: setSize and controls setup returned");
+    inputSelectButton.setBounds(444, 328, 42, 38);
+    outputSelectButton.setBounds(493, 328, 42, 38);
+    PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.16: setSize and controls setup returned");
     PCM70Diagnostics::log("PARAMETER SELECT GUI 0.4.15: editor ready");
 }
 
