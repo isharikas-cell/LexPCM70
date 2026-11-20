@@ -9,14 +9,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Configure
-        run: cmake -S PCM70_Legacy_VST3_Source_Windows_v0.4.1_DSP_patch/PCM70_Legacy_VST3_Source -B build -G "Visual Studio 17 2022" -A x64
+        run: cmake -S PCM70_Legacy_VST3_Source_Windows_v0.4.2_metadata_fix/PCM70_Legacy_VST3_Source -B build -G "Visual Studio 17 2022" -A x64
       - name: Build VST3
         run: cmake --build build --config Release --target PCM70Legacy_VST3 --parallel
-      - name: Verify bundle exists
+      - name: Verify and repair VST3 metadata
         shell: pwsh
         run: |
           $bundle = "build/PCM70Legacy_artefacts/Release/VST3/PCM70 Legacy.vst3"
           if (!(Test-Path $bundle)) { throw "Expected VST3 bundle was not produced: $bundle" }
+          $metadata = Join-Path $bundle "Contents/Resources/moduleinfo.json"
+          if (!(Test-Path $metadata)) { throw "VST3 moduleinfo.json was not produced: $metadata" }
+          $json = Get-Content $metadata -Raw
+          $json = [regex]::Replace($json, ',(\s*[}\]])', '$1')
+          $parsed = $json | ConvertFrom-Json
+          $json | Set-Content -Path $metadata -Encoding utf8
+          $check = Get-Content $metadata -Raw | ConvertFrom-Json
+          if ($check.Version -ne "0.4.2") { throw "moduleinfo.json version is not 0.4.2 (found: $($check.Version))" }
+          Write-Host "Validated moduleinfo.json version: $($check.Version)"
           Get-ChildItem $bundle -Recurse | Select-Object FullName, Length
       - name: Package VST3
         shell: pwsh
