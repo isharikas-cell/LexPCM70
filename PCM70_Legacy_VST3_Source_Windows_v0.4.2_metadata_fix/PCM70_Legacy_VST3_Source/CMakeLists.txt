@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(PCM70Legacy VERSION 0.4.2)
+project(PCM70Legacy VERSION 0.4.3)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -32,6 +32,7 @@ target_sources(PCM70Legacy PRIVATE
     Source/PluginProcessor.h
     Source/PluginEditor.cpp
     Source/PluginEditor.h
+    Source/DiagnosticLog.h
 )
 target_compile_features(PCM70Legacy PRIVATE cxx_std_17)
 target_compile_definitions(PCM70Legacy PUBLIC
