@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(PCM70Legacy VERSION 0.4.3)
+project(PCM70Legacy VERSION 0.4.4)
 
 include(FetchContent)
 FetchContent_Declare(
