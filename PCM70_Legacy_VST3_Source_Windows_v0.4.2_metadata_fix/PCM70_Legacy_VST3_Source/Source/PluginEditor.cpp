@@ -1,5 +1,6 @@
 #include "PluginEditor.h"
 #include "DiagnosticLog.h"
+#include <cmath>
 
 namespace
 {
@@ -171,12 +172,9 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.fillRoundedRectangle(juce::Rectangle<float>(45, 100, 476, 176), 2.0f);
     g.setColour(juce::Colour(0xff536e4e));
     g.drawRoundedRectangle(juce::Rectangle<float>(45, 100, 476, 176), 2.0f, 1.0f);
-    g.saveState();
-    g.reduceClipRegion(juce::Rectangle<int>(47, 102, 472, 172));
     g.setColour(juce::Colour(0x0c9cff8f));
     for (int y = 103; y < 274; y += 3)
         g.drawHorizontalLine(y, 47.0f, 519.0f);
-    g.restoreState();
 
     g.setColour(lcdGreen.withAlpha(0.88f));
     g.setFont(juce::Font("Consolas", 10.5f, juce::Font::bold));
