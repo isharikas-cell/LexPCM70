@@ -17,7 +17,7 @@ namespace PCM70Diagnostics
         if (!stream.openedOk())
             return;
 
-        stream.setPosition(stream.getTotalLength());
+        stream.setPosition(file.getSize());
         stream.writeText(juce::Time::getCurrentTime().toISO8601(true)
                              + " | " + message + juce::newLine, false, false, nullptr);
         stream.flush();
