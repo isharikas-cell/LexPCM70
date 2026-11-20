@@ -51,8 +51,8 @@ private:
     std::array<ChannelState, 2> state;
     double sr = 44100.0;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> mixSmooth, inputGainSmooth, outputGainSmooth;
-    // decay, size, predelay, diffusion, damping, modulation, width
-    std::array<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>, 7> controlSmooth;
+    // decay, size, predelay, diffusion, damping, modulation, width, mod rate, early level, late level, crossfeed
+    std::array<juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear>, 11> controlSmooth;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     static float onePole(float current, float input, float coefficient);
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PCM70LegacyAudioProcessor)
