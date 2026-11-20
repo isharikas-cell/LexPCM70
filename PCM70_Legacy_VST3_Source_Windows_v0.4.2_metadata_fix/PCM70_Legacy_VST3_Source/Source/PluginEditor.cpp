@@ -12,10 +12,30 @@ const juce::Colour green(0xffa8f0a0);
 PCM70LegacyAudioProcessorEditor::PCM70LegacyAudioProcessorEditor(PCM70LegacyAudioProcessor& p)
     : juce::AudioProcessorEditor(&p), processor(p)
 {
-    PCM70Diagnostics::log("STATIC GUI 0.4.7: constructor entered");
+    PCM70Diagnostics::log("PROGRAM SELECT GUI 0.4.8: constructor entered");
+
+    // The program selector is the only interactive control in this test stage.
+    programSelector.addItem("CONCERT HALL", 1);
+    programSelector.addItem("RICH PLATE", 2);
+    programSelector.addItem("WARM ROOM", 3);
+    programSelector.addItem("AMBIENCE", 4);
+    programSelector.setSelectedItemIndex(
+        juce::roundToInt(processor.parameters.getRawParameterValue("program")->load()),
+        juce::dontSendNotification);
+    programSelector.setJustificationType(juce::Justification::centredLeft);
+    programSelector.setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff101810));
+    programSelector.setColour(juce::ComboBox::textColourId, green);
+    programSelector.setColour(juce::ComboBox::outlineColourId, juce::Colour(0xff566b52));
+    programSelector.setColour(juce::ComboBox::arrowColourId, green);
+    programSelector.setTooltip("Select reverb program");
+    addAndMakeVisible(programSelector);
+    programAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        processor.parameters, "program", programSelector);
+
     setSize(760, 470);
-    PCM70Diagnostics::log("STATIC GUI 0.4.7: setSize returned");
-    PCM70Diagnostics::log("STATIC GUI 0.4.7: editor ready");
+    programSelector.setBounds(60, 143, 440, 34);
+    PCM70Diagnostics::log("PROGRAM SELECT GUI 0.4.8: setSize and selector setup returned");
+    PCM70Diagnostics::log("PROGRAM SELECT GUI 0.4.8: editor ready");
 }
 
 void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
@@ -40,7 +60,6 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.drawText("PCM 70  DIGITAL EFFECTS PROCESSOR", 38, 57, 360, 18, juce::Justification::centredLeft);
     g.drawText("LEGACY", 642, 35, 76, 20, juce::Justification::centredRight);
 
-    // Static recessed LCD: intentionally no widgets or parameter attachments in this stage.
     g.setColour(juce::Colour(0xff101810));
     g.fillRoundedRectangle(juce::Rectangle<float>(45, 100, 475, 174), 4.0f);
     g.setColour(juce::Colour(0xff566b52));
@@ -48,8 +67,6 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(green.withAlpha(0.75f));
     g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
     g.drawText("PROGRAM / EDIT", 62, 112, 200, 18, juce::Justification::left);
-    g.setFont(juce::Font("Consolas", 17.0f, juce::Font::bold));
-    g.drawText("CONCERT HALL", 62, 145, 420, 28, juce::Justification::left);
     g.setFont(juce::Font("Consolas", 11.0f, juce::Font::bold));
     g.drawText("PARAMETER", 62, 207, 110, 18, juce::Justification::left);
     g.setFont(juce::Font("Consolas", 15.0f, juce::Font::bold));
@@ -62,7 +79,6 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(juce::Colour(0xff77796e));
     g.drawHorizontalLine(283, 38.0f, 722.0f);
 
-    // Draw button faces as static artwork only.
     const int x0 = 52, y = 328, w = 42, h = 38, gap = 7;
     for (int i = 0; i < 10; ++i)
     {
@@ -76,7 +92,6 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
         g.drawText(juce::String(i), x, y, w, h, juce::Justification::centred);
     }
 
-    // Static encoder illustration.
     g.setColour(juce::Colour(0xff51564e));
     g.fillEllipse(590.0f, 135.0f, 88.0f, 88.0f);
     g.setColour(juce::Colour(0xffbdc1b3));
@@ -84,7 +99,6 @@ void PCM70LegacyAudioProcessorEditor::paint(juce::Graphics& g)
     g.setColour(juce::Colour(0xff242822));
     g.fillEllipse(630.0f, 146.0f, 8.0f, 34.0f);
 
-    // Four panel screws.
     g.setColour(juce::Colour(0xff66685f));
     for (auto point : { juce::Point<float>(29, 29), juce::Point<float>(731, 29),
                         juce::Point<float>(29, 441), juce::Point<float>(731, 441) })
