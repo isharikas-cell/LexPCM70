@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(PCM70Legacy VERSION 0.4.10)
+project(PCM70Legacy VERSION 0.4.11)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -17,7 +17,7 @@ juce_add_plugin(PCM70Legacy
     PLUGIN_CODE Pm71
     FORMATS VST3
     PRODUCT_NAME "PCM70 Legacy GUI TEST"
-    DESCRIPTION "PCM70 hardware-style GUI with program selector and live Decay readout"
+    DESCRIPTION "PCM70 hardware-style GUI with audible wet return and live Decay readout"
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
